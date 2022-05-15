@@ -39,8 +39,10 @@ jobs:
       run: make check-include
     - name: '`readelf` (section headers)'
       run: readelf --section-headers ${SHARED_OBJECT}
+    - name: '`reafdelf` (relocation info)'
+      run: readelf --relocs ${SHARED_OBJECT}
     - name: disasm
-      run: objdump --disassemble-all ${SHARED_OBJECT}
+      run: objdump --disassemble ${SHARED_OBJECT}
     - name: Test
       run: make c_tests
     - name: cargo bloat (display, release)
