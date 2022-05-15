@@ -37,26 +37,10 @@ jobs:
       run: make sharedlib
     - name: Assert that headers are up to date
       run: make check-include
-    - name: Assert that cdylib does not contain `panic_bounds_check`-related symbols
-      run: |
-        if nm ${SHARED_OBJECT} | grep --fixed-strings panic_bounds_check; [ $? -ne 1 ]; then
-          echo '`panic_bounds_check`-related symbols found in '${SHARED_OBJECT}
-          exit 1
-        fi
-    - name: Assert that cdylib does not contain the symbols `do_count_chars` and `pad_integral`
-      run: |
-        if nm ${SHARED_OBJECT} | grep --fixed-strings --regexp=do_count_chars --regexp=pad_integral; [ $? -ne 1 ]; then
-          echo '`do_count_chars` or `pad_integral` found in '${SHARED_OBJECT}
-          exit 1
-        fi
-    - name: Assert that cdylib does not contain the symbol `write_char`
-      run: |
-        if nm ${SHARED_OBJECT} | grep --fixed-strings write_char; [ $? -ne 1 ]; then
-          echo '`write_char` found in '${SHARED_OBJECT}
-          exit 1
-        fi
     - name: '`readelf` (section headers)'
       run: readelf --section-headers ${SHARED_OBJECT}
+    - name: disasm
+      run: objdump --disassemble-all ${SHARED_OBJECT}
     - name: Test
       run: make c_tests
     - name: cargo bloat (display, release)
