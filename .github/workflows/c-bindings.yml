@@ -64,5 +64,5 @@ jobs:
     - name: cargo bloat (display, per-crate, release)
       run: cargo +nightly bloat --release --no-default-features --features alloc --crates
     - name: cargo bloat (testing, release)
-      # Size <= 51KiB?
-      run: cargo +nightly bloat --release --no-default-features --features alloc --message-format json | jq --exit-status '."file-size" <= 52224'
+      # Size <= 50KiB?
+      run: cargo +nightly bloat --release --no-default-features --features alloc --message-format json | jq --exit-status '."file-size" <= 51200'

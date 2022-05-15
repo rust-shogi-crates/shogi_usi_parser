@@ -30,7 +30,8 @@ impl FromUsi for shogi_core::Position {
         if s.get(..5) != Some(b"moves") {
             return Ok((orig, shogi_core::Position::arbitrary_position(partial)));
         }
-        let mut s = &s[5..];
+        // Safety: s.len() >= 5
+        let mut s = unsafe { s.get_unchecked(5..) };
         let mut position = shogi_core::Position::arbitrary_position(partial);
         loop {
             let orig = s;
@@ -86,7 +87,8 @@ impl FromUsi for PartialPosition {
                 description: "invalid token: `sfen` was expected",
             });
         }
-        s = &s[4..];
+        // Safety: s.len() >= 4
+        s = unsafe { s.get_unchecked(4..) };
 
         let mut s = try_with_progress!(parse_many_whitespaces(s), orig.len() - s.len());
 
