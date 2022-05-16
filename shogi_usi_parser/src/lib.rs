@@ -81,6 +81,19 @@ pub trait FromUsi: private::Sealed + Sized {
 #[doc(inline)]
 pub use crate::error::{Error, Result};
 
+/// C functions.
+pub mod c_func {
+    #[doc(inline)]
+    pub use crate::hand::Hand_parse_usi_slice;
+
+    #[doc(inline)]
+    pub use crate::position::PartialPosition_parse_usi_slice;
+
+    #[cfg(feature = "alloc")]
+    #[doc(inline)]
+    pub use crate::position::Position_parse_usi_slice;
+}
+
 mod private {
     use super::*;
 

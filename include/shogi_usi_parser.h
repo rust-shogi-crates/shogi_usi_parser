@@ -11,18 +11,20 @@
 
 
 /**
- * C interface of `<[Hand; 2]>::parse_usi_slice`.
+ * C interface of [`<[Hand; 2]>::parse_usi_slice`][FromUsi::parse_usi_slice].
+ *
  * If parse error occurs, it returns -1.
  * If parsing succeeds, it returns the number of read bytes.
  *
  * # Safety
- * `hand` must be a valid pointer to Hand[2].
+ * `hand` must be a valid pointer to `Hand[2]`.
  * `s` must be a nul-terminated C string.
  */
 ptrdiff_t Hand_parse_usi_slice(Hand (*hand)[2], const uint8_t *s);
 
 /**
- * C interface of `PartialPosition::parse_usi_slice`.
+ * C interface of [`PartialPosition::parse_usi_slice`].
+ *
  * If parse error occurs, it returns -1.
  * If parsing succeeds, it returns the number of read bytes.
  *
@@ -34,7 +36,8 @@ ptrdiff_t PartialPosition_parse_usi_slice(PartialPosition *position, const uint8
 
 #if defined(DEFINE_ALLOC)
 /**
- * C interface of `Position::parse_usi_slice`.
+ * C interface of [`Position::parse_usi_slice`][shogi_core::Position].
+ *
  * If parse error occurs, it returns -1.
  * If parsing succeeds, it returns the number of read bytes.
  *

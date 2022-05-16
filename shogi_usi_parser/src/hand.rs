@@ -19,7 +19,7 @@ use crate::{Error, FromUsi, Result};
 /// let hand = <[Hand; 2]>::from_usi_lite("18p").unwrap();
 /// assert_eq!(hand[1].count(PieceKind::Pawn), Some(18)); // white
 ///
-/// // Not something strongly encouraged, but the order of pieces are irrelevant:
+/// // Not something strongly encouraged, but the order of pieces is irrelevant:
 /// let hand = <[Hand; 2]>::from_usi_lite("PNSP").unwrap();
 /// assert_eq!(hand[0].count(PieceKind::Silver), Some(1)); // black
 /// assert_eq!(hand[0].count(PieceKind::Knight), Some(1)); // black
@@ -113,12 +113,13 @@ impl FromUsi for [Hand; 2] {
     }
 }
 
-/// C interface of `<[Hand; 2]>::parse_usi_slice`.
+/// C interface of [`<[Hand; 2]>::parse_usi_slice`][FromUsi::parse_usi_slice].
+///
 /// If parse error occurs, it returns -1.
 /// If parsing succeeds, it returns the number of read bytes.
 ///
 /// # Safety
-/// `hand` must be a valid pointer to Hand[2].
+/// `hand` must be a valid pointer to `Hand[2]`.
 /// `s` must be a nul-terminated C string.
 #[no_mangle]
 pub unsafe extern "C" fn Hand_parse_usi_slice(hand: &mut [Hand; 2], s: *const u8) -> isize {

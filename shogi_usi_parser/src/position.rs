@@ -209,7 +209,8 @@ fn parse_row(s: &[u8]) -> Result<(&[u8], [Option<Piece>; 9])> {
     Ok((this_row, result))
 }
 
-/// C interface of `Position::parse_usi_slice`.
+/// C interface of [`Position::parse_usi_slice`][shogi_core::Position].
+///
 /// If parse error occurs, it returns -1.
 /// If parsing succeeds, it returns the number of read bytes.
 ///
@@ -225,7 +226,8 @@ pub unsafe extern "C" fn Position_parse_usi_slice(
     crate::common::make_parse_usi_slice_c(position, s)
 }
 
-/// C interface of `PartialPosition::parse_usi_slice`.
+/// C interface of [`PartialPosition::parse_usi_slice`].
+///
 /// If parse error occurs, it returns -1.
 /// If parsing succeeds, it returns the number of read bytes.
 ///
