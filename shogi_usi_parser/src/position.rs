@@ -211,19 +211,23 @@ fn parse_row(s: &[u8]) -> Result<(&[u8], [Option<Piece>; 9])> {
 
 /// C interface of [`Position::parse_usi_slice`][shogi_core::Position].
 ///
-/// If parse error occurs, it returns -1.
-/// If parsing succeeds, it returns the number of read bytes.
+/// If parse error occurs, it returns NULL.
+/// If parsing succeeds, it returns the read [`Position`][shogi_core::Position].
 ///
 /// # Safety
-/// `position` must be a valid pointer to a PartialPosition.
 /// `s` must be a nul-terminated C string.
 #[no_mangle]
 #[cfg(feature = "alloc")]
-pub unsafe extern "C" fn Position_parse_usi_slice(
-    position: &mut shogi_core::Position,
-    s: *const u8,
-) -> isize {
-    crate::common::make_parse_usi_slice_c(position, s)
+pub unsafe extern "C" fn Position_parse_usi_slice(s: *const u8) -> *mut shogi_core::Position {
+    let length = crate::common::strlen(s);
+    let slice = core::slice::from_raw_parts(s, length);
+    match shogi_core::Position::parse_usi_slice(slice) {
+        Ok((_slice, resulting_data)) => {
+            let returned = alloc::boxed::Box::new(resulting_data);
+            alloc::boxed::Box::leak(returned)
+        }
+        Err(_) => core::ptr::null_mut(),
+    }
 }
 
 /// C interface of [`PartialPosition::parse_usi_slice`].
@@ -240,4 +244,28 @@ pub unsafe extern "C" fn PartialPosition_parse_usi_slice(
     s: *const u8,
 ) -> isize {
     crate::common::make_parse_usi_slice_c(position, s)
+}
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+    use shogi_core::Position;
+
+    #[test]
+    fn position_works() {
+        let s = "sfen lnsgkgsnl/1r5b1/ppppppppp/9/9/9/PPPPPPPPP/1B5R1/LNSGKGSNL b - 1";
+        let (rem, pos) = Position::parse_usi_slice(s.as_bytes()).unwrap();
+        assert!(rem.is_empty());
+        let pos_as_str = pos.to_sfen_owned();
+        assert_eq!(s, "sfen ".to_owned() + &pos_as_str);
+    }
+
+    #[test]
+    fn partial_position_works() {
+        let s = "sfen lnsgkgsnl/1r5b1/ppppppppp/9/9/9/PPPPPPPPP/1B5R1/LNSGKGSNL b - 1";
+        let (rem, pos) = PartialPosition::parse_usi_slice(s.as_bytes()).unwrap();
+        assert!(rem.is_empty());
+        let pos_as_str = pos.to_sfen_owned();
+        assert_eq!(s, "sfen ".to_owned() + &pos_as_str);
+    }
 }

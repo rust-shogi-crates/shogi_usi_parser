@@ -38,14 +38,13 @@ ptrdiff_t PartialPosition_parse_usi_slice(PartialPosition *position, const uint8
 /**
  * C interface of [`Position::parse_usi_slice`][shogi_core::Position].
  *
- * If parse error occurs, it returns -1.
- * If parsing succeeds, it returns the number of read bytes.
+ * If parse error occurs, it returns NULL.
+ * If parsing succeeds, it returns the read [`Position`][shogi_core::Position].
  *
  * # Safety
- * `position` must be a valid pointer to a PartialPosition.
  * `s` must be a nul-terminated C string.
  */
-ptrdiff_t Position_parse_usi_slice(Position *position, const uint8_t *s);
+Position *Position_parse_usi_slice(const uint8_t *s);
 #endif
 
 #endif /* shogi_usi_parser_bindings_h */
