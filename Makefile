@@ -7,11 +7,11 @@ sharedlib:
 
 include: include/shogi_usi_parser.h
 
-include/shogi_usi_parser.h: cbindgen.toml
-	./generate_header.sh
+include/%.h: cbindgen.toml
+	./generate_header.sh $*
 
 check-include:
-	./generate_header.sh --verify
+	./generate_header.sh shogi_usi_parser --verify
 
 c_tests: sharedlib include
 	$(MAKE) -C c_tests

@@ -82,7 +82,7 @@ bitflags = false
 ############## Options for How Your Rust library Should Be Parsed ##############
 
 [parse]
-parse_deps = false
+parse_deps = true
 exclude = []
 clean = false
 extra_bindings = []

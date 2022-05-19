@@ -2,7 +2,9 @@ use shogi_core::{Color, Piece, PieceKind};
 
 use crate::{Error, FromUsi, Result};
 
+/// cbindgen:ignore
 const BLACK_PIECES: &[u8] = b"PLNSGBRK";
+/// cbindgen:ignore
 const WHITE_PIECES: &[u8] = b"plnsgbrk";
 
 /// ```

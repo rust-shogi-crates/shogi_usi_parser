@@ -11,6 +11,81 @@
 
 
 /**
+ * A player.
+ *
+ * [`Color`] and <code>[Option]<[Color]></code> are both 1-byte data types.
+ * Because they are cheap to copy, they implement [`Copy`].
+ */
+enum Color {
+  /**
+   * Black, who plays first. Known as `先手` (*sente*).
+   *
+   * Its representation is 1.
+   */
+  Black = 1,
+  /**
+   * White, who plays second. Known as `後手` (*gote*).
+   *
+   * Its representation is 2.
+   */
+  White = 2,
+};
+typedef uint8_t Color;
+
+#if defined(DEFINE_ALLOC)
+/**
+ * A position. It provides sufficient data for legality checking.
+ */
+typedef struct Position Position;
+#endif
+
+/**
+ * A hand of a single player. A hand is a multiset of unpromoted pieces (except a king).
+ *
+ * This type can hold up to 255 pieces of each kind, although the rule of shogi prohibits it.
+ *
+ * Because [`Hand`] is cheap to copy, it implements [`Copy`](https://doc.rust-lang.org/core/marker/trait.Copy.html).
+ * Its [`Default`] value is an empty instance.
+ */
+typedef struct Hand {
+  uint8_t _0[8];
+} Hand;
+
+/**
+ * C-compatible type for <code>[Option]<[Piece]></code> with defined representations.
+ *
+ * Valid representations are `0..=14`, and `17..=30`. `0` represents [`None`], `1..=14` represents a black [`Piece`] and `17..=30` represents a white [`Piece`].
+ *
+ * cbindgen cannot deduce that <code>[Option]<[Piece]></code> can be represented by `uint8_t` in C, so we need to define the bridge type.
+ * See: <https://github.com/eqrion/cbindgen/issues/326>
+ */
+typedef uint8_t OptionPiece;
+
+/**
+ * C-compatible type for <code>[Option]<[CompactMove]></code>.
+ *
+ * cbindgen cannot deduce that <code>[Option]<[CompactMove]></code> can be represented by `uint16_t` in C, so we need to define the bridge type.
+ * See: <https://github.com/eqrion/cbindgen/issues/326>.
+ */
+typedef uint16_t OptionCompactMove;
+
+/**
+ * A position with its move sequence omitted.
+ *
+ * This data is insufficient for complete legality checking (such as repetition checking),
+ * but in most cases it suffices. If you need a complete legality checking, use `Position`.
+ *
+ * TODO: describe exactly when a position is considered valid
+ */
+typedef struct PartialPosition {
+  Color side;
+  uint16_t ply;
+  struct Hand hands[2];
+  OptionPiece board[81];
+  OptionCompactMove last_move;
+} PartialPosition;
+
+/**
  * C interface of [`<[Hand; 2]>::parse_usi_slice`][FromUsi::parse_usi_slice].
  *
  * If parse error occurs, it returns -1.
@@ -20,7 +95,7 @@
  * `hand` must be a valid pointer to `Hand[2]`.
  * `s` must be a nul-terminated C string.
  */
-ptrdiff_t Hand_parse_usi_slice(Hand (*hand)[2], const uint8_t *s);
+ptrdiff_t Hand_parse_usi_slice(struct Hand (*hand)[2], const uint8_t *s);
 
 /**
  * C interface of [`PartialPosition::parse_usi_slice`].
@@ -32,7 +107,7 @@ ptrdiff_t Hand_parse_usi_slice(Hand (*hand)[2], const uint8_t *s);
  * `position` must be a valid pointer to a PartialPosition.
  * `s` must be a nul-terminated C string.
  */
-ptrdiff_t PartialPosition_parse_usi_slice(PartialPosition *position, const uint8_t *s);
+ptrdiff_t PartialPosition_parse_usi_slice(struct PartialPosition *position, const uint8_t *s);
 
 #if defined(DEFINE_ALLOC)
 /**
@@ -44,7 +119,7 @@ ptrdiff_t PartialPosition_parse_usi_slice(PartialPosition *position, const uint8
  * # Safety
  * `s` must be a nul-terminated C string.
  */
-Position *Position_parse_usi_slice(const uint8_t *s);
+struct Position *Position_parse_usi_slice(const uint8_t *s);
 #endif
 
 #endif /* shogi_usi_parser_bindings_h */
