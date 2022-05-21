@@ -249,6 +249,7 @@ pub unsafe extern "C" fn PartialPosition_parse_usi_slice(
 #[cfg(test)]
 mod tests {
     use super::*;
+    use alloc::borrow::ToOwned;
     use shogi_core::Position;
 
     #[test]

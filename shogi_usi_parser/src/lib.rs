@@ -1,7 +1,11 @@
-#![cfg_attr(not(test), no_std)] // Forbids using std::*.
+#![no_std] // Forbids using std::*.
+#![cfg_attr(docsrs, feature(doc_cfg))]
 
 #[cfg(feature = "alloc")]
 extern crate alloc;
+
+#[cfg(any(test, feature = "std"))]
+extern crate std;
 
 use shogi_core::{Color, Hand, Move, PartialPosition, Piece, Square};
 

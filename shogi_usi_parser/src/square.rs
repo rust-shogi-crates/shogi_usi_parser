@@ -44,6 +44,8 @@ impl FromUsi for Square {
 #[cfg(test)]
 mod tests {
     use super::*;
+    use alloc::string::String;
+    use alloc::vec;
 
     #[test]
     fn from_usi_positive() {
