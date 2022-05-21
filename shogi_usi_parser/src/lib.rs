@@ -9,18 +9,7 @@ extern crate std;
 
 use shogi_core::{Color, Hand, Move, PartialPosition, Piece, Square};
 
-mod color;
-mod common;
-mod error;
-mod hand;
-mod mv;
-mod piece;
-mod position;
-mod square;
-
 // Equivalent to the `?` operator. Avoids `From` impl lookup.
-#[macro_export]
-#[doc(hidden)]
 macro_rules! bind {
     ($e:expr) => {
         match $e {
@@ -31,8 +20,6 @@ macro_rules! bind {
 }
 
 // `?` operator with shifting indices in `InvalidInput`.
-#[macro_export]
-#[doc(hidden)]
 macro_rules! try_with_progress {
     ($e:expr, $shift:expr) => {
         match $e {
@@ -53,7 +40,16 @@ macro_rules! try_with_progress {
     };
 }
 
-/// `FromUsi` is a [sealed](https://rust-lang.github.io/api-guidelines/future-proofing.html) trait: other crates cannot implement `FromUsi` for types.
+mod color;
+mod common;
+mod error;
+mod hand;
+mod mv;
+mod piece;
+mod position;
+mod square;
+
+/// [`FromUsi`] is a [sealed](https://rust-lang.github.io/api-guidelines/future-proofing.html) trait: other crates cannot implement [`FromUsi`] for types.
 pub trait FromUsi: private::Sealed + Sized {
     /// Primitive parsing method. This crate handles implementing this method.
     #[doc(hidden)]
@@ -72,7 +68,7 @@ pub trait FromUsi: private::Sealed + Sized {
     }
 
     /// Parses USI representation.
-    /// If an error occurs, this function will only notify that there is some error by returning `None`.
+    /// If an error occurs, this function will only notify that there is some error by returning [`None`].
     #[inline]
     fn from_usi_lite(s: &str) -> Option<Self> {
         match Self::from_usi(s) {
@@ -85,7 +81,7 @@ pub trait FromUsi: private::Sealed + Sized {
 #[doc(inline)]
 pub use crate::error::{Error, Result};
 
-/// C functions.
+/// Functions exported from cdylib.
 pub mod c_func {
     #[doc(inline)]
     pub use crate::hand::Hand_parse_usi_slice;

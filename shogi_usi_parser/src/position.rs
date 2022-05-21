@@ -1,6 +1,6 @@
 use shogi_core::{Color, Hand, PartialPosition, Piece, Square};
 
-use crate::{try_with_progress, Error, FromUsi, Result};
+use crate::{Error, FromUsi, Result};
 
 /// ```
 /// # use shogi_core::{Color, PartialPosition, Position};
@@ -18,9 +18,10 @@ use crate::{try_with_progress, Error, FromUsi, Result};
 /// assert_eq!(position.initial_position(), &PartialPosition::startpos());
 /// ```
 #[cfg(feature = "alloc")]
+#[cfg_attr(docsrs, doc(cfg(feature = "alloc")))]
 impl FromUsi for shogi_core::Position {
     fn parse_usi_slice(s: &[u8]) -> Result<(&[u8], Self)> {
-        let (s, partial) = crate::bind!(PartialPosition::parse_usi_slice(s));
+        let (s, partial) = bind!(PartialPosition::parse_usi_slice(s));
         let orig = s;
         // handles moves
         let s = match parse_many_whitespaces(s) {
@@ -218,6 +219,7 @@ fn parse_row(s: &[u8]) -> Result<(&[u8], [Option<Piece>; 9])> {
 /// `s` must be a nul-terminated C string.
 #[no_mangle]
 #[cfg(feature = "alloc")]
+#[cfg_attr(docsrs, doc(cfg(feature = "std")))]
 pub unsafe extern "C" fn Position_parse_usi_slice(s: *const u8) -> *mut shogi_core::Position {
     let length = crate::common::strlen(s);
     let slice = core::slice::from_raw_parts(s, length);

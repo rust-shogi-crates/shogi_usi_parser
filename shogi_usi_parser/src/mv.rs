@@ -1,6 +1,6 @@
 use shogi_core::{Color, Move, Piece, Square};
 
-use crate::{bind, try_with_progress, Error, FromUsi, Result};
+use crate::{Error, FromUsi, Result};
 
 /// Drop moves are assumed to be black's move.
 /// In order to figure out whose move it is,
