@@ -1,8 +1,17 @@
 [package]
 name = "shogi_usi_parser_c"
-version = "0.1.0"
+version = "0.0.0-unpublished"
+authors = ["Rust shogi crates developers"]
 edition = "2021"
-categories = ["no-std"]
+rust-version = "1.60"
+description = "Conversion from strings in USI format"
+documentation = "https://docs.rs/shogi_usi_parser"
+readme = "README.md"
+repository = "https://github.com/rust-shogi-crates/shogi_usi_parser/tree/main/shogi_usi_parser"
+license = "MIT"
+keywords = ["shogi", "engine"]
+categories = ["games", "game-engines", "game-development", "no-std"]
+publish = false
 
 [features]
 default = ["std"]
