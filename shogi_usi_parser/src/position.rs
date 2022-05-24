@@ -3,7 +3,7 @@ use shogi_core::{Color, Hand, PartialPosition, Piece, Square};
 use crate::{Error, FromUsi, Result};
 
 /// ```
-/// # use shogi_core::{Color, PartialPosition, Position};
+/// # use shogi_core::{Color, Move, PartialPosition, Piece, PieceKind, Position, Square};
 /// use shogi_usi_parser::FromUsi;
 /// let position = Position::from_usi("sfen lnsgkgsnl/1r5b1/ppppppppp/9/9/9/PPPPPPPPP/1B5R1/LNSGKGSNL b - 101 moves 7g7f").unwrap();
 /// assert_eq!(position.ply(), 101 + 1);
@@ -16,11 +16,20 @@ use crate::{Error, FromUsi, Result};
 /// // startpos is startpos
 /// let position = Position::from_usi("startpos moves 7g7f 3c3d 8h2b+ 3a2b").unwrap();
 /// assert_eq!(position.initial_position(), &PartialPosition::startpos());
+/// assert_eq!(position.ply(), 5);
+///
+/// // Drop moves
+/// let position = Position::from_usi("sfen 9/9/9/9/9/9/9/9/K7k b Rp 1 moves R*9a P*9b").unwrap();
+/// assert_eq!(position.ply(), 3);
+/// assert_eq!(position.piece_at(Square::new(9, 1).unwrap()), Some(Piece::new(PieceKind::Rook, Color::Black)));
+/// assert_eq!(position.last_move(), Some(Move::Drop { piece: Piece::new(PieceKind::Pawn, Color::White), to: Square::new(9, 2).unwrap() })); // it's White's move
 /// ```
 #[cfg(feature = "alloc")]
 #[cfg_attr(docsrs, doc(cfg(feature = "alloc")))]
 impl FromUsi for shogi_core::Position {
     fn parse_usi_slice(s: &[u8]) -> Result<(&[u8], Self)> {
+        use shogi_core::Move;
+
         let (s, partial) = bind!(PartialPosition::parse_usi_slice(s));
         let orig = s;
         // handles moves
@@ -34,6 +43,7 @@ impl FromUsi for shogi_core::Position {
         // Safety: s.len() >= 5
         let mut s = unsafe { s.get_unchecked(5..) };
         let mut position = shogi_core::Position::arbitrary_position(partial);
+        let mut side = position.side_to_move();
         loop {
             let orig = s;
             // optionally read whitespaces and a move
@@ -45,9 +55,21 @@ impl FromUsi for shogi_core::Position {
                 Ok((next, mv)) => (next, mv),
                 Err(_) => return Ok((orig, position)),
             };
+            // if mv is a drop move, it is always Black's move due to the limitation of impl FromUsi for Move.
+            // adjust mv to be a move for `side`
+            let mv = match mv {
+                Move::Drop { piece, to } => {
+                    let piece = Piece::new(piece.piece_kind(), side);
+                    Move::Drop { piece, to }
+                }
+                _ => mv,
+            };
             // Even if the read move does not make sense, the parser will not emit an error.
-            let _ = position.make_move(mv);
+            let result = position.make_move(mv);
             s = next;
+            if result.is_some() {
+                side = side.flip();
+            }
         }
     }
 }
